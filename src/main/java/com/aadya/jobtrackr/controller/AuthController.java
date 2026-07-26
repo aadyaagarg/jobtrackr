@@ -1,9 +1,11 @@
 package com.aadya.jobtrackr.controller;
 
-import com.aadya.jobtrackr.dto.LoginRequest;
-import com.aadya.jobtrackr.dto.RegisterRequest;
+import com.aadya.jobtrackr.dto.request.LoginRequest;
+import com.aadya.jobtrackr.dto.request.RegisterRequest;
 import com.aadya.jobtrackr.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,12 +18,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public String register(@RequestBody RegisterRequest registerRequest) {
-        return authService.register(registerRequest);
+    public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(registerRequest));
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest loginRequest) {
-        return authService.login(loginRequest);
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.status(HttpStatus.OK).body(authService.login(loginRequest));
     }
 }

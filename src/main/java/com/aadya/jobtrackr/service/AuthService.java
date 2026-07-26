@@ -1,7 +1,7 @@
 package com.aadya.jobtrackr.service;
 
-import com.aadya.jobtrackr.dto.LoginRequest;
-import com.aadya.jobtrackr.dto.RegisterRequest;
+import com.aadya.jobtrackr.dto.request.LoginRequest;
+import com.aadya.jobtrackr.dto.request.RegisterRequest;
 import com.aadya.jobtrackr.entity.User;
 import com.aadya.jobtrackr.repository.UserRepository;
 import com.aadya.jobtrackr.security.JwtService;
