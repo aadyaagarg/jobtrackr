@@ -30,7 +30,7 @@ public class Job {
     @Enumerated(EnumType.STRING)
     private Source source;
     private String notes;
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

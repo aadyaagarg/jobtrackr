@@ -2,8 +2,13 @@ package com.aadya.jobtrackr.service;
 
 import com.aadya.jobtrackr.dto.request.CreateJobRequest;
 import com.aadya.jobtrackr.entity.Job;
+import com.aadya.jobtrackr.entity.User;
 import com.aadya.jobtrackr.repository.JobRepository;
+import com.aadya.jobtrackr.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,8 +17,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JobService {
     private final JobRepository jobRepository;
+    private final UserRepository userRepository;
+
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return userRepository.findByEmail(userDetails.getUsername()).orElseThrow();
+    }
 
     public String addJob(CreateJobRequest jobRequest) {
+        User currentUser = getCurrentUser();
         Job job = new Job();
         job.setCompany(jobRequest.getCompany());
         job.setJobTitle(jobRequest.getJobTitle());
@@ -25,20 +38,26 @@ public class JobService {
         job.setMaxSalary(jobRequest.getMaxSalary());
         job.setSource(jobRequest.getSource());
         job.setNotes(jobRequest.getNotes());
+        job.setUser(currentUser);
         jobRepository.save(job);
         return "Job added successfully";
     }
 
     public List<Job> getJobs() {
-        return jobRepository.findAll();
+        User currentUser = getCurrentUser();
+        return jobRepository.findByUser(currentUser);
     }
 
     public Job getJobById(Long id) {
-        return jobRepository.findById(id).orElseThrow(() -> new RuntimeException("job not found"));
+        User currentUser = getCurrentUser();
+        return jobRepository.findByIdAndUser(id, currentUser)
+                .orElseThrow(() -> new RuntimeException("job not found"));
     }
 
     public String updateJob(Long id, CreateJobRequest jobRequest) {
-        Job job = jobRepository.findById(id).orElseThrow(() -> new RuntimeException("job not found"));
+        User currentUser = getCurrentUser();
+        Job job = jobRepository.findByIdAndUser(id, currentUser)
+                .orElseThrow(() -> new RuntimeException("job not found"));
         job.setCompany(jobRequest.getCompany());
         job.setJobTitle(jobRequest.getJobTitle());
         job.setLocation(jobRequest.getLocation());
@@ -54,7 +73,8 @@ public class JobService {
     }
 
     public String deleteJobById(Long id) {
-        Job job = jobRepository.findById(id)
+        User currentUser = getCurrentUser();
+        Job job = jobRepository.findByIdAndUser(id, currentUser)
                 .orElseThrow(() -> new RuntimeException("Job not found"));
         jobRepository.delete(job);
         return "Job deleted successfully";
