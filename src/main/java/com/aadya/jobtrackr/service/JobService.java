@@ -3,6 +3,7 @@ package com.aadya.jobtrackr.service;
 import com.aadya.jobtrackr.dto.request.CreateJobRequest;
 import com.aadya.jobtrackr.entity.Job;
 import com.aadya.jobtrackr.entity.User;
+import com.aadya.jobtrackr.exception.JobNotFoundException;
 import com.aadya.jobtrackr.repository.JobRepository;
 import com.aadya.jobtrackr.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -51,13 +52,13 @@ public class JobService {
     public Job getJobById(Long id) {
         User currentUser = getCurrentUser();
         return jobRepository.findByIdAndUser(id, currentUser)
-                .orElseThrow(() -> new RuntimeException("job not found"));
+                .orElseThrow(() -> new JobNotFoundException("Job not found"));
     }
 
     public String updateJob(Long id, CreateJobRequest jobRequest) {
         User currentUser = getCurrentUser();
         Job job = jobRepository.findByIdAndUser(id, currentUser)
-                .orElseThrow(() -> new RuntimeException("job not found"));
+                .orElseThrow(() -> new JobNotFoundException("Job not found"));
         job.setCompany(jobRequest.getCompany());
         job.setJobTitle(jobRequest.getJobTitle());
         job.setLocation(jobRequest.getLocation());
@@ -75,7 +76,7 @@ public class JobService {
     public String deleteJobById(Long id) {
         User currentUser = getCurrentUser();
         Job job = jobRepository.findByIdAndUser(id, currentUser)
-                .orElseThrow(() -> new RuntimeException("Job not found"));
+                .orElseThrow(() -> new JobNotFoundException("Job not found"));
         jobRepository.delete(job);
         return "Job deleted successfully";
     }

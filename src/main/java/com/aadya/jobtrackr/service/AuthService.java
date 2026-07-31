@@ -3,6 +3,7 @@ package com.aadya.jobtrackr.service;
 import com.aadya.jobtrackr.dto.request.LoginRequest;
 import com.aadya.jobtrackr.dto.request.RegisterRequest;
 import com.aadya.jobtrackr.entity.User;
+import com.aadya.jobtrackr.exception.UserAlreadyExistsException;
 import com.aadya.jobtrackr.repository.UserRepository;
 import com.aadya.jobtrackr.security.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class AuthService {
 
     public String register(RegisterRequest registerRequest) {
         if (userRepository.existsByEmail(registerRequest.getEmail()))
-            throw new RuntimeException("Email already exists");
+            throw new UserAlreadyExistsException("Email already exists");
         User user = new User();
         user.setName(registerRequest.getName());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
