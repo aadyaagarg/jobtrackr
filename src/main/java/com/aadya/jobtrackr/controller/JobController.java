@@ -3,6 +3,7 @@ package com.aadya.jobtrackr.controller;
 import com.aadya.jobtrackr.dto.request.CreateJobRequest;
 import com.aadya.jobtrackr.dto.response.JobResponse;
 import com.aadya.jobtrackr.service.JobService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/jobs")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class JobController {
     private final JobService jobService;
 
