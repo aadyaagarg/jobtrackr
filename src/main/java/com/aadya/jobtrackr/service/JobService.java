@@ -8,6 +8,8 @@ import com.aadya.jobtrackr.exception.JobNotFoundException;
 import com.aadya.jobtrackr.repository.JobRepository;
 import com.aadya.jobtrackr.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,14 +33,11 @@ public class JobService {
         return mapToResponse(job);
     }
 
-    public List<JobResponse> getJobs() {
+    public Page<JobResponse> getJobs(Pageable pageable) {
         User currentUser = getCurrentUser();
-        List<Job> jobs = jobRepository.findByUser(currentUser);
+        Page<Job> jobs = jobRepository.findByUser(currentUser, pageable);
         List<JobResponse> jobResponses = new ArrayList<>();
-        for (Job job : jobs) {
-            jobResponses.add(mapToResponse(job));
-        }
-        return jobResponses;
+        return jobs.map(job -> mapToResponse(job));
     }
 
     public JobResponse getJobById(Long id) {

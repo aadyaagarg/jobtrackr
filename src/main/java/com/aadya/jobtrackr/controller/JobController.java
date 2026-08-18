@@ -6,11 +6,11 @@ import com.aadya.jobtrackr.service.JobService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/jobs")
@@ -26,8 +26,8 @@ public class JobController {
     }
 
     @GetMapping
-    public ResponseEntity<List<JobResponse>> getJobs() {
-        return ResponseEntity.ok(jobService.getJobs());
+    public ResponseEntity<Page<JobResponse>> getJobs(Pageable pageable) {
+        return ResponseEntity.ok(jobService.getJobs(pageable));
     }
 
     @GetMapping("/{id}")
