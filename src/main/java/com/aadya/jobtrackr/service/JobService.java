@@ -3,13 +3,16 @@ package com.aadya.jobtrackr.service;
 import com.aadya.jobtrackr.dto.request.CreateJobRequest;
 import com.aadya.jobtrackr.dto.response.JobResponse;
 import com.aadya.jobtrackr.entity.Job;
+import com.aadya.jobtrackr.entity.Status;
 import com.aadya.jobtrackr.entity.User;
 import com.aadya.jobtrackr.exception.JobNotFoundException;
 import com.aadya.jobtrackr.repository.JobRepository;
+import com.aadya.jobtrackr.repository.JobSpecification;
 import com.aadya.jobtrackr.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,9 +36,19 @@ public class JobService {
         return mapToResponse(job);
     }
 
-    public Page<JobResponse> getJobs(Pageable pageable) {
+    public Page<JobResponse> getJobs(Pageable pageable, Status status, String company) {
         User currentUser = getCurrentUser();
-        Page<Job> jobs = jobRepository.findByUser(currentUser, pageable);
+        Specification<Job> specification = JobSpecification.hasUser(currentUser);
+        if (status != null) {
+            specification = specification.and(JobSpecification.hasStatus(status));
+        }
+
+        if (company != null && !company.isBlank()) {
+            specification = specification.and(
+                    JobSpecification.hasCompany(company)
+            );
+        }
+        Page<Job> jobs = jobRepository.findAll(specification, pageable);
         List<JobResponse> jobResponses = new ArrayList<>();
         return jobs.map(job -> mapToResponse(job));
     }

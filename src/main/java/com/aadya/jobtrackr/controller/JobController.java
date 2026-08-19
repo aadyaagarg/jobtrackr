@@ -2,6 +2,7 @@ package com.aadya.jobtrackr.controller;
 
 import com.aadya.jobtrackr.dto.request.CreateJobRequest;
 import com.aadya.jobtrackr.dto.response.JobResponse;
+import com.aadya.jobtrackr.entity.Status;
 import com.aadya.jobtrackr.service.JobService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -21,13 +22,12 @@ public class JobController {
 
     @PostMapping
     public ResponseEntity<JobResponse> addJob(@Valid @RequestBody CreateJobRequest jobRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(jobService.addJob(jobRequest));
+        return ResponseEntity.status(HttpStatus.CREATED).body(jobService.addJob(jobRequest));
     }
 
     @GetMapping
-    public ResponseEntity<Page<JobResponse>> getJobs(Pageable pageable) {
-        return ResponseEntity.ok(jobService.getJobs(pageable));
+    public ResponseEntity<Page<JobResponse>> getJobs(Pageable pageable, @RequestParam(required = false) Status status, @RequestParam(required = false) String company) {
+        return ResponseEntity.ok(jobService.getJobs(pageable, status, company));
     }
 
     @GetMapping("/{id}")
