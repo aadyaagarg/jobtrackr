@@ -2,6 +2,7 @@ package com.aadya.jobtrackr.controller;
 
 import com.aadya.jobtrackr.dto.request.LoginRequest;
 import com.aadya.jobtrackr.dto.request.RegisterRequest;
+import com.aadya.jobtrackr.dto.response.LoginResponse;
 import com.aadya.jobtrackr.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
-        return ResponseEntity.status(HttpStatus.OK).body(authService.login(loginRequest));
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+        String token = authService.login(loginRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(new LoginResponse(token));
     }
 }
